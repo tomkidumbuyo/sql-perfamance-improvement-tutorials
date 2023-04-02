@@ -154,3 +154,38 @@ search happens only when the DBMS is case sensitive. Here's how
 This will work fast for any database system that is not case sensitive or set to be case sensitive.
 
 ## Sargability
+The left side of a search condition should be a simple column name; the right side should be an easy- to-look-up value.
+
+To enforce this rule, all DBMSs will transpose the expression:
+```sql
+5 = column1
+```
+
+to:
+
+```sql
+column1 = 5
+```
+
+When there's arithmetic involved, though, only some DBMSs will transpose. For example, we tested this transform:
+
+```sql
+... WHERE column1 - 3 = -column2
+```
+
+transforms to:
+
+```sql
+... WHERE column1 = -column2 + 3
+```
+
+On a 32-bit computer, arithmetic is fastest if all operands are INTEGERs (because INTEGERs are 32- bit signed numbers) rather than SMALLINTs, DECIMALs, or FLOATs. Thus this condition:
+
+```sql
+... WHERE decimal_column * float_column
+```
+is slower than:
+
+```sql
+... WHERE integer_column * integer_column
+```
