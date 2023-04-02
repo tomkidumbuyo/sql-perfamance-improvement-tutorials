@@ -52,3 +52,32 @@ The point count for this type of search condition is much lower—only 13:
 - Five points for the greater than or equal to operator
 - Three points for the multioperand expression (varchar_column || 'x') on the right
 - Zero points for the VARCHAR (varchar_column) operand data type
+
+## Constant Propagation
+Formally, the Law of <b>Transitivity</b> states that:
+
+```sql
+IF
+(A <comparison operator> B) IS TRUE AND (B <comparisonoperator> C) IS TRUE
+THEN
+(A <comparison operator> C) IS TRUE AND NOT (A <comparisonoperator> C) IS FALSE
+```
+This means we only need to compare `A` and `C` and we can have just 1 conditional statement instead of 2.
+
+(Comparison operator is any one of: `=` or `>` or `>=` or `<` or `<=` but not one of: `<>` or `LIKE`.)
+
+### example 1
+```sql
+... WHERE column1 < column2
+      AND column2 = column3
+      AND column1 = 5
+```
+
+this can be simplified to
+```sql
+... WHERE 5 < column2
+      AND column2 = column3
+      AND column1 = 5
+```
+
+By using `5` instead of `column1` yo get Ten points for the literal (5) alone.
