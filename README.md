@@ -1,5 +1,7 @@
 # SQL TUNING
+This course is to help use tune (increase efficiency) of our SQL queries. the solution provided from the methods bellow wont work in all the SQL databases out there but each and every one will work on atleast one of the main type Databases.
 
+# Simple Searches
 ## Code for Points
 we can create a code for points system to improve perfomance. Each search condition component has a "point count"—the better the component, the higher the score. You can see from the allotted points below.
 
@@ -127,3 +129,28 @@ these can quickly be folded to
 ... WHERE a = 8  
 
 ```
+
+## Case-Insensitive Searches
+A slightly faster search assumes that the data is clean and asks for the only reasonable combinations, like this:
+
+```sql 
+... WHERE column1 = 'SMITH'
+       OR column1 = 'Smith'
+```
+
+than this
+
+```sql 
+... WHERE UPPER(column1) = 'SMITH'
+```
+
+You can also take advantage of dead code elimination so that the 'Smith'
+search happens only when the DBMS is case sensitive. Here's how
+
+```sql
+... WHERE column1 = 'SMITH'
+      OR  ('SMITH' <> 'Smith' AND column1 = 'Smith')
+```
+This will work fast for any database system that is not case sensitive or set to be case sensitive.
+
+## Sargability
