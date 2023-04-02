@@ -81,3 +81,49 @@ this can be simplified to
 ```
 
 By using `5` instead of `column1` yo get Ten points for the literal (5) alone.
+
+## Dead Code Elimination 
+
+This means all queries with unused code shold be used 
+
+## Ensure You Use the Right DBMS
+There are several ways to ensure that a specific DBMS (and no other) executes an expression. Here are three examples, all of which use nonstandard SQL extensions:
+```sql
+... WHERE :variable = 'Oracle'
+      AND /* Oracle-specific code here */
+```
+
+## Constant Folding
+`1+1-1-1` is equal to `0`. i sue this example since in C `x=1+1-1-1` is automatically folded to `x=0` and not computed. But SQL cannot fold the following.
+
+```sql
+... WHERE column1 + 0
+
+... WHERE 5 + 0.0
+
+... WHERE column1 IN (1, 3, 3)
+
+... CAST(1 AS INTEGER)
+
+... WHERE 'a' || 'b'
+
+... WHERE a - 3 = 5
+
+```
+
+these can quickly be folded to
+
+```sql
+... WHERE column1 /* any number plus zero is that number */
+
+... WHERE 5 /* any number plus zero is that number */
+
+... WHERE column1 IN (1, 3) /* you only need one three */
+
+... /* this can be completely removed */
+
+... /* this can be completely removed */
+
+... WHERE a = 8  
+
+```
